@@ -1,11 +1,15 @@
 package com.akashdubey.serviceunbound;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.os.StatFs;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 
 
 public class SongPlayerService extends Service {
@@ -39,6 +43,21 @@ public class SongPlayerService extends Service {
             mp.setLooping(true);
         }
 
+        NotificationCompat.Builder  builder= new NotificationCompat.Builder(getApplicationContext())
+                .setContentTitle("My Media Player")
+                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setContentText("Song is being play - know more, click here ")
+                .setAutoCancel(true);
+
+        Intent goToMain=new Intent(this,MainActivity.class);
+        TaskStackBuilder taskStackBuilder= TaskStackBuilder.create(this);
+        taskStackBuilder.addParentStack(MainActivity.class);
+        taskStackBuilder.addNextIntent(goToMain);
+
+        PendingIntent pendingIntent= taskStackBuilder.getPendingIntent(0,PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(pendingIntent);
+        NotificationManager notificationManager= (NotificationManager) getSystemService(getApplicationContext().NOTIFICATION_SERVICE);
+        notificationManager.notify(0,builder.build());
         return super.onStartCommand(intent, flags, startId);
 
     }
